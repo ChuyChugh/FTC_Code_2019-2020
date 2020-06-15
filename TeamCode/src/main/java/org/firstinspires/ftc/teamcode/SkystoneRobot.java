@@ -160,7 +160,7 @@ Makes the field into a coordinate system which makes traveling much more efficie
                             robotMoveX,
                             robotMoveY,
                             0,
-                            IMUHeading()
+                            Math.toRadians(IMUHeading())
                     );
             }
         }
@@ -170,14 +170,14 @@ Makes the field into a coordinate system which makes traveling much more efficie
                         0,
                         0,
                         robotMoveAngle/360 * robotPower,
-                        IMUHeading()
+                        Math.toRadians(IMUHeading())
                 );
             }
         }
 
     }
-    public void drive(double x, double y, double turn, double gyro){
-        m_drive.driveFieldCentric(x, y, turn, gyro);
+    public void drive(double x, double y, double turn, double power, double gyro){
+        m_drive.driveFieldCentric(x * power, y * power, turn * power, gyro);
     }
 
     //TeleOp driving

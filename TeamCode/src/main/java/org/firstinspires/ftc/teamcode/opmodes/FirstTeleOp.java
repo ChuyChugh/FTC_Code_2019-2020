@@ -13,6 +13,7 @@ public class FirstTeleOp extends LinearOpMode {
     private SkystoneRobot robot = new SkystoneRobot(hardwareMap);
     private GamepadEx controllerOne = new GamepadEx(gamepad1);
     private GamepadEx controllerTwo = new GamepadEx(gamepad2);
+    private double power = 1;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -37,6 +38,7 @@ public class FirstTeleOp extends LinearOpMode {
                     controllerOne.getLeftX(),
                     controllerOne.getLeftY(),
                     controllerOne.getRightX(),
+                    power,
                     Math.toRadians(robot.IMUHeading())
             );
 
@@ -48,6 +50,12 @@ public class FirstTeleOp extends LinearOpMode {
                 robot.outtake();
             }else {
                 robot.stopIntake();
+            }
+            //power increase/decrease
+            if(controllerOne.getButton(GamepadKeys.Button.DPAD_UP)){
+                power += 0.05;
+            }else if(controllerOne.getButton(GamepadKeys.Button.DPAD_DOWN)){
+                power -=0.05;
             }
             //lift
             robot.lift(controllerTwo.getLeftY());
