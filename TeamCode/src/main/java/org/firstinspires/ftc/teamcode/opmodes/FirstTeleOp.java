@@ -25,6 +25,7 @@ public class FirstTeleOp extends LinearOpMode {
             telemetry.addData("X Position", robot.returnXPosition());
             telemetry.addData("Y Position", robot.returnYPosition());
             telemetry.addData("Orientation (Degrees)", robot.orientation());
+            telemetry.addData("Drive power: ", power);
 
             telemetry.addData("Vertical left encoder position", robot.verticalLeftPosition());
             telemetry.addData("Vertical right encoder position", robot.verticalRightPosition());
