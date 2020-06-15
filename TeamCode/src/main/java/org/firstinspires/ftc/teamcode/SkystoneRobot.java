@@ -182,12 +182,7 @@ Makes the field into a coordinate system which makes traveling much more efficie
 
     //TeleOp driving
 
-    public void setPower(double power){
-        m_frontLeft.set(power);
-        m_frontRight.set(power);
-        m_backLeft.set(power);
-        m_backRight.set(power);
-    }
+
 
 
     public void reverseEncoders(){
