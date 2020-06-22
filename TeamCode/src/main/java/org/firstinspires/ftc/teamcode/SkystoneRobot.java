@@ -23,7 +23,6 @@ import org.firstinspires.ftc.teamcode.hardware.subsystems.IntakeTwoWheel;
 import org.firstinspires.ftc.teamcode.opmodes.OdometryGlobalCoordinatePosition;
 
 public class SkystoneRobot extends Robot {
-    private DcMotor right_front, right_back, left_front, left_back;
     private YellowJacketEx m_frontLeft, m_frontRight, m_backLeft, m_backRight;
     private MotorGroup m_left, m_right, intake, lift;
     private MecanumDrive m_drive;
@@ -176,14 +175,10 @@ Makes the field into a coordinate system which makes traveling much more efficie
         }
 
     }
+    //teleop driving
     public void drive(double x, double y, double turn, double power, double gyro){
         m_drive.driveFieldCentric(x * power, y * power, turn * power, gyro);
     }
-
-    //TeleOp driving
-
-
-
 
     public void reverseEncoders(){
         globalPositionUpdate.reverseRightEncoder();
