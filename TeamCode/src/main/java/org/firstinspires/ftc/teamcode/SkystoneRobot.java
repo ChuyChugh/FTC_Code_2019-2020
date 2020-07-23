@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.opmodes.OdometryGlobalCoordinatePosition;
 
 public class SkystoneRobot extends Robot {
     private YellowJacketEx m_frontLeft, m_frontRight, m_backLeft, m_backRight;
-    private MotorGroup m_left, m_right, intake, lift;
+    private MotorGroup m_left, m_right;
     private MecanumDrive m_drive;
 
 
@@ -141,6 +141,9 @@ public class SkystoneRobot extends Robot {
 /*
 Makes the field into a coordinate system which makes traveling much more efficient. targetXPosition is the X2 coordinate, and targetYPosition is the Y2 coordinate.
  */
+        targetXPosition *= COUNTS_PER_INCH;
+        targetYPosition *= COUNTS_PER_INCH;
+        allowableDistanceError *= COUNTS_PER_INCH;
         double distanceToX = targetXPosition - globalPositionUpdate.returnXCoordinate(); //x distance needed to travel from X1 to X2
         double distanceToY = targetYPosition - globalPositionUpdate.returnYCoordinate();
         double robotMoveAngle = desiredRobotOrientation - globalPositionUpdate.returnOrientation();
@@ -155,21 +158,19 @@ Makes the field into a coordinate system which makes traveling much more efficie
             //y magnitude vector
             double robotMoveY = calculateY(movementAngle, robotPower);
             if (m_safety == Safety.SWIFT){
-                    m_drive.driveFieldCentric(
+                    m_drive.driveRobotCentric(
                             robotMoveX,
                             robotMoveY,
-                            0,
-                            Math.toRadians(IMUHeading())
-                    );
+                            0
+                            );
             }
         }
         while(robotMoveAngle > allowableRotationError){
             if(m_safety == Safety.SWIFT){
-                m_drive.driveFieldCentric(
+                m_drive.driveRobotCentric(
                         0,
                         0,
-                        robotMoveAngle/360 * robotPower,
-                        Math.toRadians(IMUHeading())
+                        robotMoveAngle/360 * robotPower
                 );
             }
         }
@@ -222,7 +223,6 @@ Makes the field into a coordinate system which makes traveling much more efficie
     public void liftToPosition(double position, double speed) { m_lift.liftToPosition(position, speed); }
     //TeleOp lift
     public void lift(double power){ m_lift.lift(power);}
-    public void stopLift(){m_lift.stop();}
 
     public void start(){ positionThread.start(); }
     public boolean alive(){ return positionThread.isAlive(); }

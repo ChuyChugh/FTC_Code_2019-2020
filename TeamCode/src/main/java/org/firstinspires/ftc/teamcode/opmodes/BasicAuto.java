@@ -11,8 +11,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="First Autonomous")
 public class BasicAuto extends LinearOpMode  {
-    private HardwareMap hardwareMap;
-    private final double COUNTS_PER_INCH = 145.6 / (4 * Math.PI);
     private ElapsedTime time = new ElapsedTime();
     private SkystoneRobot robot = new SkystoneRobot(hardwareMap);
 
@@ -32,20 +30,20 @@ public class BasicAuto extends LinearOpMode  {
         /*
         This part of the program first intakes a block then goes back to the first position.
          */
-        robot.drive(10 * COUNTS_PER_INCH, 24 * COUNTS_PER_INCH, 1, 90, 0.1 * COUNTS_PER_INCH, 1);
+        robot.drive(10 , 24, 1, 90, 0.1, 1);
         robot.intake();
         time.wait(2000);
         robot.stopIntake();
-        robot.drive(0, 0, 1, 0, 0.1 * COUNTS_PER_INCH,1);
+        robot.drive(0, 0, 1, 0, 0.1,1);
         /*
         The second part of this autonomous would go to the foundation and put the block into the foundation.
          */
-        robot.drive(-100 * COUNTS_PER_INCH, 0 * COUNTS_PER_INCH, 1, 180, 0.1 * COUNTS_PER_INCH, 1);
-        robot.drive(-100 * COUNTS_PER_INCH, 48 * COUNTS_PER_INCH, 1, 0, 0.1 * COUNTS_PER_INCH, 1);
-        robot.drive(-100 * COUNTS_PER_INCH, 48 * COUNTS_PER_INCH, 1, 180, 0.1 * COUNTS_PER_INCH, 1);
-        robot.liftToPosition(-3 * COUNTS_PER_INCH, 0.25);
+        robot.drive(-100, 0, 1, 180, 0.1 , 1);
+        robot.drive(-100, 48, 1, 0, 0.1, 1);
+        robot.drive(-100, 48, 1, 180, 0.1, 1);
+        robot.liftToPosition(-3 , 0.25);
         robot.grabBlock();
-        robot.liftToPosition(3* COUNTS_PER_INCH, 0.25);
+        robot.liftToPosition(3, 0.25);
         robot.armReleasingPosition();
         robot.releaseBlock();
         robot.armDownPosition();
@@ -53,33 +51,33 @@ public class BasicAuto extends LinearOpMode  {
         This next part would put the foundation into the zone and then travel back to the original coordinate
          */
         robot.grabFoundation();
-        robot.drive(-100 * COUNTS_PER_INCH, 24 * COUNTS_PER_INCH, 0.5, 180, 0.1 * COUNTS_PER_INCH, 1);
-        robot.drive(-100 * COUNTS_PER_INCH, -24 * COUNTS_PER_INCH, 0.5, 90, 0.1 * COUNTS_PER_INCH, 1);
-        robot.drive(-110 * COUNTS_PER_INCH, -24 * COUNTS_PER_INCH, 0.5, 90, 0.1 * COUNTS_PER_INCH,1);
+        robot.drive(-100, 24, 0.5, 180, 0.1, 1);
+        robot.drive(-100, -24, 0.5, 90, 0.1, 1);
+        robot.drive(-110, -24, 0.5, 90, 0.1 ,1);
         robot.releaseFoundation();
-        robot.drive(0 * COUNTS_PER_INCH, 0 * COUNTS_PER_INCH, 1, 0, 0.1 * COUNTS_PER_INCH, 1);
+        robot.drive(0 , 0 , 1, 0, 0.1, 1);
         //This puts the robot back into the same position it was earlier
-        robot.drive(-20*COUNTS_PER_INCH, 0, 1, 0, 0.1*COUNTS_PER_INCH,1);
+        robot.drive(-20, 0, 1, 0, 0.1,1);
         /*Second part of autonomous
         This first section of the second part of the autonomous intakes a block and makes the robot go back to the position.
          */
-        robot.drive(20 * COUNTS_PER_INCH, 24 * COUNTS_PER_INCH, 1, 90, 0.1 * COUNTS_PER_INCH, 1);
+        robot.drive(20, 24 , 1, 90, 0.1, 1);
         robot.intake();
         time.wait(2000);
         robot.stopIntake();
-        robot.drive(0, 0, 1, 0, 0.1 * COUNTS_PER_INCH, 1);
-        robot.drive(0,0, 1,90, 0.1 * COUNTS_PER_INCH, 1);
+        robot.drive(0, 0, 1, 0, 0.1, 1);
+        robot.drive(0,0, 1,90, 0.1 , 1);
         /*
         This section of the program makes the robot drive all the way to the foundation and puts a block in the foundation. After that the autonomous would end after the robot goes under the bridge.
          */
-        robot.drive(-110, 0, 1, 90, 0.1*COUNTS_PER_INCH, 1);
-        robot.liftToPosition(-3 * COUNTS_PER_INCH, 0.25);
+        robot.drive(-110, 0, 1, 90, 0.1, 1);
+        robot.liftToPosition(-3, 0.25);
         robot.grabBlock();
-        robot.liftToPosition(9* COUNTS_PER_INCH, 0.25);
+        robot.liftToPosition(9, 0.25);
         robot.armReleasingPosition();
         robot.releaseBlock();
         robot.armDownPosition();
-        robot.drive(-50* COUNTS_PER_INCH, 0, 1, 90, 0.1* COUNTS_PER_INCH, 1);
+        robot.drive(-50, 0, 1, 90, 0.1, 1);
 
 
 

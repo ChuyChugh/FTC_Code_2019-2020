@@ -9,7 +9,6 @@ import org.firstinspires.ftc.teamcode.SkystoneRobot;
 
 @TeleOp(name="TeleOp Offseason")
 public class FirstTeleOp extends LinearOpMode {
-    private final double COUNTS_PER_INCH = 307.699557;
     private SkystoneRobot robot = new SkystoneRobot(hardwareMap);
     private GamepadEx controllerOne = new GamepadEx(gamepad1);
     private GamepadEx controllerTwo = new GamepadEx(gamepad2);
@@ -57,6 +56,11 @@ public class FirstTeleOp extends LinearOpMode {
                 power += 0.05;
             }else if(controllerOne.getButton(GamepadKeys.Button.DPAD_DOWN)){
                 power -=0.05;
+            }
+            if(power > 1){
+                power = 1;
+            }else if(power < 0){
+                power = 0;
             }
             //lift
             robot.lift(controllerTwo.getLeftY());
