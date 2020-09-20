@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.hardware.motors.YellowJacketEx;
 
 public class DoublePulleyLift implements Subsystem{
     private YellowJacketEx m_left, m_right;
-
+    private final double COUNTS_PER_INCH = 145.6 / (4 * Math.PI);
     public DoublePulleyLift(YellowJacketEx left, YellowJacketEx right){
         m_left = left;
         m_right = right;
@@ -37,6 +37,7 @@ public class DoublePulleyLift implements Subsystem{
         m_right.pidWrite(power);
     }
     public void liftToPosition(double position, double power){
+        position *= COUNTS_PER_INCH;
         m_left.setTargetPosition(position);
         m_right.setTargetPosition(position);
         m_left.pidWrite(power);

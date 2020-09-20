@@ -1,30 +1,31 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.arcrobotics.ftclib.hardware.JSTEncoder;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 import java.io.File;
-
-/**
- * Created by Sarthak on 6/1/2019.
+/*
+Made by Margaret Thatcher
  */
 public class OdometryGlobalCoordinatePosition implements Runnable{
     //Odometry wheels
-    private DcMotor verticalEncoderLeft, verticalEncoderRight, horizontalEncoder;
+    private JSTEncoder left, right, center;
 
     //Thead run condition
-    private boolean isRunning = true;
+    private boolean running = true;
 
     //Position variables used for storage and calculations
-    double verticalRightEncoderWheelPosition = 0, verticalLeftEncoderWheelPosition = 0, normalEncoderWheelPosition = 0,  changeInRobotOrientation = 0;
-    private double robotGlobalXCoordinatePosition = 0, robotGlobalYCoordinatePosition = 0, robotOrientationRadians = 0;
-    private double previousVerticalRightEncoderWheelPosition = 0, previousVerticalLeftEncoderWheelPosition = 0, prevNormalEncoderWheelPosition = 0;
+    double leftPosition = 0, rightPosition = 0, centerPosition = 0, orientationChange = 0;
+    private double previousLeftPosition = 0, previousRightPosition = 0, previousCenterPosition = 0;
+    private double robotXCoordinate = 0, robotYCoordinate = 0, robotOrientation = 0;
 
     //Algorithm constants
     private double robotEncoderWheelDistance;
+    private double encoderWheelDistance;
     private double horizontalEncoderTickPerDegreeOffset;
+    private double horizontalOffset;
 
     //Sleep time interval (milliseconds) for the position update thread
     private int sleepTime;
@@ -33,26 +34,22 @@ public class OdometryGlobalCoordinatePosition implements Runnable{
     private File wheelBaseSeparationFile = AppUtil.getInstance().getSettingsFile("wheelBaseSeparation.txt");
     private File horizontalTickOffsetFile = AppUtil.getInstance().getSettingsFile("horizontalTickOffset.txt");
 
-    private int verticalLeftEncoderPositionMultiplier = 1;
-    private int verticalRightEncoderPositionMultiplier = 1;
-    private int normalEncoderPositionMultiplier = 1;
 
     /**
      * Constructor for GlobalCoordinatePosition Thread
-     * @param verticalEncoderLeft left odometry encoder, facing the vertical direction
-     * @param verticalEncoderRight right odometry encoder, facing the vertical direction
-     * @param horizontalEncoder horizontal odometry encoder, perpendicular to the other two odometry encoder wheels
+     * @param left :left odometry encoder, facing the vertical direction
+     * @param right :right odometry encoder, facing the vertical direction
+     * @param center :horizontal odometry encoder, perpendicular to the other two odometry encoder wheels
      * @param threadSleepDelay delay in milliseconds for the GlobalPositionUpdate thread (50-75 milliseconds is suggested)
      */
-    public OdometryGlobalCoordinatePosition(DcMotor verticalEncoderLeft, DcMotor verticalEncoderRight, DcMotor horizontalEncoder, double COUNTS_PER_INCH, int threadSleepDelay){
-        this.verticalEncoderLeft = verticalEncoderLeft;
-        this.verticalEncoderRight = verticalEncoderRight;
-        this.horizontalEncoder = horizontalEncoder;
-        sleepTime = threadSleepDelay;
 
+    public OdometryGlobalCoordinatePosition(JSTEncoder left, JSTEncoder right, JSTEncoder center, double COUNTS_PER_INCH, int threadSleepDelay){
+        this.left = left;
+        this.right = right;
+        this.center = center;
+        sleepTime = threadSleepDelay;
         robotEncoderWheelDistance = Double.parseDouble(ReadWriteFile.readFile(wheelBaseSeparationFile).trim()) * COUNTS_PER_INCH;
         this.horizontalEncoderTickPerDegreeOffset = Double.parseDouble(ReadWriteFile.readFile(horizontalTickOffsetFile).trim());
-
     }
 
     /**
@@ -60,86 +57,68 @@ public class OdometryGlobalCoordinatePosition implements Runnable{
      */
     private void globalCoordinatePositionUpdate(){
         //Get Current Positions
-        verticalLeftEncoderWheelPosition = (verticalEncoderLeft.getCurrentPosition() * verticalLeftEncoderPositionMultiplier);
-        verticalRightEncoderWheelPosition = (verticalEncoderRight.getCurrentPosition() * verticalRightEncoderPositionMultiplier);
+        leftPosition = (left.getCounts());
+        rightPosition = (right.getCounts());
 
-        double leftChange = verticalLeftEncoderWheelPosition - previousVerticalLeftEncoderWheelPosition;
-        double rightChange = verticalRightEncoderWheelPosition - previousVerticalRightEncoderWheelPosition;
+
+        double leftC = leftPosition - previousLeftPosition;
+        double rightC = rightPosition - previousRightPosition;
+
 
         //Calculate Angle
-        changeInRobotOrientation = (leftChange - rightChange) / (robotEncoderWheelDistance);
-        robotOrientationRadians = ((robotOrientationRadians + changeInRobotOrientation));
+        orientationChange = (leftC-rightC)/encoderWheelDistance;
+        robotOrientation += orientationChange;
+
 
         //Get the components of the motion
-        normalEncoderWheelPosition = (horizontalEncoder.getCurrentPosition()*normalEncoderPositionMultiplier);
-        double rawHorizontalChange = normalEncoderWheelPosition - prevNormalEncoderWheelPosition;
-        double horizontalChange = rawHorizontalChange - (changeInRobotOrientation*horizontalEncoderTickPerDegreeOffset);
+        centerPosition = (center.getCounts());
+        double rawChange = centerPosition - previousCenterPosition;
+        double horizontalChange = rawChange - (orientationChange*horizontalOffset);
 
-        double p = ((rightChange + leftChange) / 2);
-        double n = horizontalChange;
+        double srihith = (rightC + leftC)/2;
+        double kanav = horizontalChange;
+
 
         //Calculate and update the position values
-        robotGlobalXCoordinatePosition = robotGlobalXCoordinatePosition + (p*Math.sin(robotOrientationRadians) + n*Math.cos(robotOrientationRadians));
-        robotGlobalYCoordinatePosition = robotGlobalYCoordinatePosition + (p*Math.cos(robotOrientationRadians) - n*Math.sin(robotOrientationRadians));
+        robotXCoordinate += (srihith*Math.sin(robotOrientation))+(kanav*Math.cos(robotOrientation));
+        robotYCoordinate += (srihith*Math.cos(robotOrientation))-(kanav*Math.sin(robotOrientation));
 
-        previousVerticalLeftEncoderWheelPosition = verticalLeftEncoderWheelPosition;
-        previousVerticalRightEncoderWheelPosition = verticalRightEncoderWheelPosition;
-        prevNormalEncoderWheelPosition = normalEncoderWheelPosition;
+        previousLeftPosition = leftPosition;
+        previousRightPosition = rightPosition;
+        previousCenterPosition = centerPosition;
+
     }
 
     /**
      * Returns the robot's global x coordinate
      * @return global x coordinate
      */
-    public double returnXCoordinate(){ return robotGlobalXCoordinatePosition; }
+    public double returnXCoordinate(){ return robotXCoordinate; }
 
     /**
      * Returns the robot's global y coordinate
      * @return global y coordinate
      */
-    public double returnYCoordinate(){ return robotGlobalYCoordinatePosition; }
+    public double returnYCoordinate(){ return robotYCoordinate; }
 
     /**
      * Returns the robot's global orientation
      * @return global orientation, in degrees
      */
-    public double returnOrientation(){ return Math.toDegrees(robotOrientationRadians) % 360; }
+    public double returnOrientation(){ return Math.toDegrees(robotOrientation) % 360; }
 
     /**
      * Stops the position update thread
      */
-    public void stop(){ isRunning = false; }
+    public void stop(){ running = false; }
 
-    public void reverseLeftEncoder(){
-        if(verticalLeftEncoderPositionMultiplier == 1){
-            verticalLeftEncoderPositionMultiplier = -1;
-        }else{
-            verticalLeftEncoderPositionMultiplier = 1;
-        }
-    }
-
-    public void reverseRightEncoder(){
-        if(verticalRightEncoderPositionMultiplier == 1){
-            verticalRightEncoderPositionMultiplier = -1;
-        }else{
-            verticalRightEncoderPositionMultiplier = 1;
-        }
-    }
-
-    public void reverseNormalEncoder(){
-        if(normalEncoderPositionMultiplier == 1){
-            normalEncoderPositionMultiplier = -1;
-        }else{
-            normalEncoderPositionMultiplier = 1;
-        }
-    }
 
     /**
      * Runs the thread
      */
     @Override
     public void run() {
-        while(isRunning) {
+        while(running) {
             globalCoordinatePositionUpdate();
             try {
                 Thread.sleep(sleepTime);
